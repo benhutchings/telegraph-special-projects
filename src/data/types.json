@@ -1,0 +1,9 @@
+{
+  "_comment": "Optional intro text for each Type, shown beside the section heading. Keys must match the Type column in the sheet. Types not listed here still appear, just without a description. Order here also sets section order on the home page (unlisted types follow, largest first).",
+  "Longform": "Ambitious, visually rich long reads that combine reporting, photography, video and bespoke graphics into immersive storytelling.",
+  "Atom": "Standalone interactive experiences, from quizzes and calculators to explorable guides and scrollytelling, built to put readers at the centre of the story.",
+  "Storycard": "Tappable, card-based stories that break big subjects into bite-sized, highly visual moments.",
+  "Calculator": "Personalised tools that turn data into answers about readers' own money, health and lives.",
+  "Quiz": "Playful tests of knowledge and opinion that invite readers to take part.",
+  "Gallery": "Picture-led storytelling that brings major moments to life through photography and video."
+}

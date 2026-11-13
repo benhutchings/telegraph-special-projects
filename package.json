@@ -1,0 +1,21 @@
+{
+  "name": "telegraph-special-projects",
+  "type": "module",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "astro dev",
+    "sync": "node --env-file-if-exists=.env scripts/sync-sheet.mjs",
+    "check": "node scripts/check-data.mjs",
+    "images": "node scripts/fetch-images.mjs",
+    "prebuild": "node scripts/check-data.mjs && node scripts/fetch-images.mjs",
+    "build": "astro build",
+    "preview": "astro preview"
+  },
+  "dependencies": {
+    "astro": "^7.4.11"
+  },
+  "engines": {
+    "node": ">=22.23.4"
+  }
+}

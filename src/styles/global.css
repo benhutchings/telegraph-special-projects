@@ -1,0 +1,302 @@
+/* Telegraph brand fonts (see src/assets/fonts/README.md).
+   Roles follow the Telegraph Design System typography tokens:
+   Austin News Ionic Light → page titles (h1) · Ionic Roman No 2 → card titles (h3)
+   Austin News Ionic Roman → standfirsts & reading text · Austin News Deck → menu, footer logo
+   Doric News UI → interface, labels, small text (Hed Medium for headings). */
+@font-face {
+  font-family: 'Austin News Deck';
+  src: url('../assets/fonts/AustinNewsDeck-Semibold.woff2') format('woff2');
+  font-weight: 500 900; /* only Semibold is loaded: map every heavy weight to it, never fake bold */
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'Austin News Ionic';
+  src: url('../assets/fonts/AustinNewsIonic-Light.woff2') format('woff2');
+  font-weight: 100 349; /* Light: used for page titles at weight 300 */
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'Austin News Ionic';
+  src: url('../assets/fonts/AustinNewsIonic-Roman.woff2') format('woff2');
+  font-weight: 350 900;
+  font-style: normal;
+  font-display: swap;
+}
+/* Separate family so it doesn't compete with Light/Roman for the same weights */
+@font-face {
+  font-family: 'Austin News Ionic No2';
+  src: url('../assets/fonts/AustinNewsIonic-RomanNo2.woff2') format('woff2');
+  font-weight: 100 900;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'Doric News UI';
+  src: url('../assets/fonts/DoricNewsUI-UIRegular.woff2') format('woff2');
+  font-weight: 100 450;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'Doric News UI';
+  src: url('../assets/fonts/DoricNewsUI-HedMedium.woff2') format('woff2');
+  font-weight: 451 599;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'Doric News UI';
+  src: url('../assets/fonts/DoricNewsUI-UIBold.woff2') format('woff2');
+  font-weight: 600 900;
+  font-style: normal;
+  font-display: swap;
+}
+
+:root {
+  --bg: #000;
+  --bg-2: #111;
+  --ink: #fff;
+  --ink-2: #c9c9c9;
+  --ink-3: #8a8a8a;
+  --rule: #333;
+
+  /* Fallbacks per the design system: Georgia for serif, Arial for sans. */
+  --display: 'Austin News Deck', Georgia, serif;
+  --serif: 'Austin News Ionic', Georgia, serif;
+  --serif-no2: 'Austin News Ionic No2', Georgia, serif;
+  --sans: 'Doric News UI', Arial, sans-serif;
+
+  --radius-image: 4px;
+
+  --max: 1000px;
+  --gutter: clamp(20px, 4vw, 40px);
+}
+/* Mobile: tighter side margins (content, header and footer all use --gutter) */
+@media (max-width: 540px) {
+  :root { --gutter: 12px; }
+}
+
+*, *::before, *::after { box-sizing: border-box; }
+
+html { -webkit-text-size-adjust: 100%; color-scheme: dark; }
+
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--ink);
+  font-family: var(--sans);
+  font-weight: 400;
+  font-size: 17px; /* type.body.doric.body-1 */
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+}
+
+img { max-width: 100%; display: block; }
+
+/* Page load: fade the content in (header stays put so the logo doesn't flash) */
+@keyframes page-fade-in {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+main,
+.site-footer {
+  animation: page-fade-in 0.5s ease-out both;
+}
+/* Page exit: Base.astro adds .is-leaving before following an internal link */
+@keyframes page-fade-out {
+  from { opacity: 1; }
+  to { opacity: 0; }
+}
+.is-leaving main,
+.is-leaving .site-footer,
+.is-leaving .menu[open] {
+  animation: page-fade-out 0.25s ease-in forwards;
+}
+@media (prefers-reduced-motion: reduce) {
+  main,
+  .site-footer,
+  .is-leaving main,
+  .is-leaving .site-footer,
+  .is-leaving .menu[open] { animation: none; }
+}
+
+a { color: inherit; }
+
+::selection { background: #fff; color: #000; }
+
+:focus-visible { outline: 2px solid #fff; outline-offset: 3px; }
+
+.wrap {
+  max-width: calc(var(--max) + 2 * var(--gutter));
+  margin: 0 auto;
+  padding: 0 var(--gutter);
+}
+
+/* Austin News Deck Semibold: card and page titles */
+.display {
+  font-family: var(--display);
+  font-weight: 600;
+  text-wrap: balance;
+}
+
+/* Large page title (h1): Austin News Ionic Light, display-1 scale (49px → 99px) */
+.page-title {
+  font-family: var(--serif);
+  font-weight: 300;
+  font-size: clamp(49px, 3rem + 4.6vw, 99px);
+  line-height: 1.06;
+  text-align: center;
+  text-wrap: balance; /* avoid one-word last lines */
+}
+
+/* Section header: label left, description right, rule above */
+.section-head {
+  /* Same columns and gutter as .grid, so the description lines up with the cards */
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 12px 32px;
+  padding-top: 18px;
+  border-top: 1px solid var(--rule);
+  margin-bottom: 28px;
+}
+/* type.heading.doric.heading-4: Doric Hed Medium 21/27 */
+.section-head h2 {
+  margin: 0;
+  font-size: 21px;
+  line-height: 27px;
+  font-weight: 500;
+}
+.section-head h2 a { text-decoration: none; }
+/* type.body.doric.body-2 */
+.section-head p {
+  margin: 0;
+  font-size: 15px;
+  line-height: 21px;
+  color: var(--ink-2);
+}
+.section-head > :not(:first-child) { grid-column: 2 / -1; }
+@media (max-width: 860px) { .section-head { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+@media (max-width: 540px) {
+  .section-head { grid-template-columns: 1fr; }
+  .section-head > :not(:first-child) { grid-column: auto; }
+}
+
+/* Three-up project grid */
+.grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 40px 32px;
+}
+@media (max-width: 860px) { .grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+@media (max-width: 540px) { .grid { grid-template-columns: 1fr; } }
+
+/* ── Buttons ────────────────────────────────────────────────────────────────
+   Telegraph Design System "Button", XS / Outlined White
+   (Figma: All YouTube file, node 666:10793). Colour tokens from colors-semantics.
+   XS is 32px tall: 12px padding, 8px on the icon's side, 4px top/bottom, 4px gap,
+   type.button.label-2 (Doric UI Regular 15/15), 20px icon. Icon-only is 32×32. */
+:root {
+  --btn-outline-white-text: #ffffff;          /* web/button/text/outline-white/default */
+  --btn-outline-white-border: #ffffff;        /* web/button/border/outline-white/default */
+  --btn-outline-white-text-disabled: #dadada; /* …/disabled */
+  --btn-white-bg: #ffffff;                    /* web/button/background/white/default */
+  --btn-white-text: #222222;                  /* web/button/text/white/default */
+  --btn-white-border: #222222;                /* web/button/border/white/default */
+  --btn-focus-border: #239bec;                /* web/button/border/{colour}/focus */
+  /* Hover: fills white and flips the label and icon to black.
+     Pressed dims the fill slightly so a click still shows feedback. */
+  --btn-hover-bg: #ffffff;
+  --btn-hover-text: #000000;
+  --btn-pressed-bg: #dadada;                  /* web/grey/grey-da */
+}
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  box-sizing: border-box;
+  height: 32px;
+  min-height: 32px;
+  padding: 4px 12px;
+  border: 1px solid var(--btn-outline-white-border);
+  border-radius: 100px;
+  background: transparent;
+  color: var(--btn-outline-white-text);
+  font: inherit;
+  font-family: var(--sans);
+  font-weight: 400;
+  font-size: 15px;   /* type.button.label-2 */
+  line-height: 15px;
+  white-space: nowrap;
+  text-decoration: none;
+  cursor: pointer;
+  transition: background-color 0.15s ease, border-color 0.15s ease, color 0.15s ease;
+}
+.btn:hover {
+  background: var(--btn-hover-bg);
+  color: var(--btn-hover-text);   /* icon follows via fill: currentColor */
+}
+.btn:active {
+  background: var(--btn-pressed-bg);
+  border-color: var(--btn-pressed-bg);
+  color: var(--btn-hover-text);
+}
+.btn:focus-visible {
+  outline: none;
+  border-color: var(--btn-focus-border);
+}
+.btn:disabled,
+.btn[aria-disabled='true'] {
+  color: var(--btn-outline-white-text-disabled);
+  border-color: var(--btn-outline-white-text-disabled);
+  background: transparent;
+  cursor: default;
+}
+
+/* Icon placement: padding on the icon's side reduces by 4px (12 → 8) */
+.btn--icon-right { padding-right: 8px; }
+.btn--icon-left { padding-left: 8px; }
+.btn__icon {
+  display: inline-flex;
+  flex-shrink: 0;
+  width: 20px;
+  height: 20px;
+}
+.btn__icon svg { width: 20px; height: 20px; }
+.btn__icon path { fill: currentColor; transition: fill 0.15s ease; }
+.btn__icon--left { transform: scaleX(-1); }
+.btn__icon--external { transform: rotate(-45deg); }
+
+/* Icon-only size: fixed 32×32, 20px icon centred */
+.btn--icon {
+  width: 32px;
+  height: 32px;
+  min-height: 32px;
+  padding: 0;
+}
+
+/* White colour variant (used for the selected filter) */
+.btn--white,
+.btn--white:hover,
+.btn--white:active {
+  background: var(--btn-white-bg);
+  border-color: var(--btn-white-border);
+  color: var(--btn-white-text);
+}
+.btn--white:focus-visible { border-color: var(--btn-focus-border); }
+
+.visually-hidden {
+  position: absolute !important;
+  width: 1px; height: 1px;
+  overflow: hidden; clip: rect(0 0 0 0);
+  white-space: nowrap;
+}
+
+.skip-link {
+  position: absolute; left: -9999px; top: 8px;
+  background: #fff; color: #000; padding: 8px 12px; z-index: 30;
+}
+.skip-link:focus { left: 8px; }

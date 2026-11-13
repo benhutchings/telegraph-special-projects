@@ -1,0 +1,46 @@
+---
+import Base from '../layouts/Base.astro';
+import { getProjects, getTypes } from '../lib/projects';
+
+const projects = getProjects();
+const types = getTypes();
+---
+
+<Base title="About">
+  <section class="wrap">
+    <h1 class="page-title">About</h1>
+    <div class="section-head">
+      <h2>Special Projects</h2>
+      <div class="prose">
+        <!-- Replace this copy with the team's own description. -->
+        <p>
+          The Telegraph's special projects team works with reporters, editors, designers and
+          developers to tell stories in formats that go beyond the standard article: interactive
+          graphics, data-led investigations, immersive scrollytelling, games and more.
+        </p>
+        <p>
+          This site is an archive of that work. It currently holds {projects.length} projects across {types.length} formats. Each entry links to the published piece and, where available, the
+          original Figma design file.
+        </p>
+      </div>
+    </div>
+    <div class="section-head">
+      <h2>Formats</h2>
+      <ul>
+        {types.map((t) => (
+          <li><a href={`/type/${t.slug}/`}>{t.name}</a> <span>{t.count}</span></li>
+        ))}
+      </ul>
+    </div>
+  </section>
+</Base>
+
+<style>
+  .page-title { margin: clamp(32px, 6vw, 72px) 0 clamp(40px, 6vw, 72px); }
+  .section-head { margin-bottom: 48px; }
+  /* Paragraphs use the shared .section-head p style: Doric UI Regular 15/21 */
+  .prose p { margin: 0 0 1em; }
+  ul { list-style: none; margin: 0; padding: 0; font-size: 17px; line-height: 1.9; }
+  li a { text-decoration: none; font-weight: 500; }
+  li span { color: var(--ink-3); margin-left: 6px; font-size: 14px; }
+</style>

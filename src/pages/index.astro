@@ -1,0 +1,64 @@
+---
+import Base from '../layouts/Base.astro';
+import ProjectCard from '../components/ProjectCard.astro';
+import Button from '../components/Button.astro';
+import { getProjects, getTypes } from '../lib/projects';
+
+const PER_SECTION = 3;
+const projects = getProjects();
+const sections = getTypes().map((t) => ({
+  ...t,
+  items: projects.filter((p) => p.typeSlug === t.slug).slice(0, PER_SECTION),
+}));
+---
+
+<Base>
+  <section class="hero wrap">
+    <h1 class="visually-hidden">The Telegraph Special Projects</h1>
+    <p class="intro">
+      Special Projects at The Telegraph explores new ways of telling stories,
+      through interactives, visual journalism, games and experiments.
+    </p>
+  </section>
+
+  {sections.map((s) => (
+    <section class="wrap section" aria-labelledby={`s-${s.slug}`}>
+      <div class="section-head">
+        <h2 id={`s-${s.slug}`}><a href={`/type/${s.slug}/`}>{s.name}</a></h2>
+        {s.description && <p>{s.description}</p>}
+      </div>
+      <div class="grid">
+        {s.items.map((p) => <ProjectCard project={p} />)}
+      </div>
+      <div class="more">
+        <Button href={`/type/${s.slug}/`}>
+          See {s.count > PER_SECTION ? `all ${s.count}` : 'more'}<span class="visually-hidden"> {s.name} projects</span>
+        </Button>
+      </div>
+    </section>
+  ))}
+</Base>
+
+<style>
+  .hero {
+    text-align: center;
+    padding-top: clamp(48px, 8vw, 96px);
+    padding-bottom: clamp(56px, 8vw, 88px);
+  }
+  /* type.body.standfirst (Austin Ionic), 20/25 → 22/27 */
+  .intro {
+    margin: 0 auto;
+    max-width: 30em;
+    font-family: var(--serif);
+    font-size: clamp(20px, 1.1rem + 0.3vw, 22px);
+    line-height: 1.24;
+    text-wrap: pretty;
+    color: var(--ink);
+  }
+  .section { margin-top: 24px; }
+  .more {
+    display: flex;
+    justify-content: flex-end;
+    margin: 36px 0 32px;
+  }
+</style>

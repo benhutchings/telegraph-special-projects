@@ -1,0 +1,48 @@
+---
+// Telegraph Design System button, XS / Outlined White.
+// Styles live in src/styles/global.css under "Buttons".
+//
+//   <Button href="/type/atom/">See all</Button>                 → arrow right
+//   <Button href={url} external>View project</Button>           → opens in new tab, arrow up-right
+//   <Button href="/" icon="left">Back</Button>                  → arrow left
+//   <Button icon="none" type="button">Filter</Button>           → no icon
+import ArrowRight from '../assets/icons/arrow-right.svg';
+
+interface Props {
+  href?: string;
+  icon?: 'right' | 'left' | 'none';
+  /** Solid white variant (e.g. a selected filter). */
+  white?: boolean;
+  /** External link: opens in a new tab and angles the arrow. */
+  external?: boolean;
+  class?: string;
+  [attr: string]: unknown;
+}
+
+const {
+  href,
+  icon = 'right',
+  white = false,
+  external = false,
+  class: className,
+  ...rest
+} = Astro.props;
+
+const classes = [
+  'btn',
+  icon === 'right' && 'btn--icon-right',
+  icon === 'left' && 'btn--icon-left',
+  white && 'btn--white',
+  className,
+];
+const iconClasses = ['btn__icon', icon === 'left' && 'btn__icon--left', external && 'btn__icon--external'];
+const Tag = href ? 'a' : 'button';
+const linkAttrs = href ? { href, ...(external ? { target: '_blank', rel: 'noopener' } : {}) } : {};
+---
+
+<Tag class:list={classes} {...linkAttrs} {...rest}>
+  {icon === 'left' && <span class:list={iconClasses} aria-hidden="true"><ArrowRight /></span>}
+  <slot />
+  {external && <span class="visually-hidden"> (opens in a new tab)</span>}
+  {icon === 'right' && <span class:list={iconClasses} aria-hidden="true"><ArrowRight /></span>}
+</Tag>

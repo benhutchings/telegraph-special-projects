@@ -1,0 +1,132 @@
+---
+import Base from '../../layouts/Base.astro';
+import Thumb from '../../components/Thumb.astro';
+import ProjectCard from '../../components/ProjectCard.astro';
+import Button from '../../components/Button.astro';
+import { getImage } from 'astro:assets';
+import { getProjects, getTypes, hostname } from '../../lib/projects';
+
+export function getStaticPaths() {
+  return getProjects().map((p) => ({ params: { slug: p.slug }, props: { project: p } }));
+}
+
+const { project: p } = Astro.props;
+const all = getProjects();
+const type = getTypes().find((t) => t.slug === p.typeSlug)!;
+// Social share image for this page (absolute URL to a 1200px JPEG).
+const ogImage =
+  typeof p.image === 'string'
+    ? p.image
+    : p.image
+      ? new URL((await getImage({ src: p.image, width: 1200, format: 'jpg' })).src, Astro.site).href
+      : undefined;
+const related = all.filter((x) => x.typeSlug === p.typeSlug && x.slug !== p.slug).slice(0, 3);
+---
+
+<Base title={p.title} description={p.description || `${p.type} · The Telegraph Special Projects`} image={ogImage}>
+  <article class="wrap">
+    <header class="head">
+      <a class="type" href={`/type/${p.typeSlug}/`}>{p.type}</a>
+      <h1 class="page-title">
+        {p.url ? (
+          <a class="article-link" href={p.url} target="_blank" rel="noopener">
+            {p.title}<span class="visually-hidden"> (opens the article in a new tab)</span>
+          </a>
+        ) : p.title}
+      </h1>
+      {p.description && <p class="dek">{p.description}</p>}
+    </header>
+
+    {p.url ? (
+      // Same destination as the title link, so it's skipped by keyboard and screen readers
+      <a class="hero-link" href={p.url} target="_blank" rel="noopener" tabindex="-1" aria-hidden="true">
+        <Thumb project={p} large />
+      </a>
+    ) : (
+      <Thumb project={p} large />
+    )}
+
+    <div class="details">
+      <dl class="meta">
+        <div><dt>Format</dt><dd><a href={`/type/${p.typeSlug}/`}>{p.type}</a></dd></div>
+        {p.year && <div><dt>Year</dt><dd>{p.year}</dd></div>}
+        {p.url && <div><dt>Published on</dt><dd>{hostname(p.url)}</dd></div>}
+      </dl>
+      <div class="actions">
+        {p.url && (
+          <Button href={p.url} external>View project</Button>
+        )}
+        {p.figma && (
+          <Button href={p.figma} external>Figma file</Button>
+        )}
+      </div>
+    </div>
+  </article>
+
+  {related.length > 0 && (
+    <section class="wrap related" aria-labelledby="more">
+      <div class="section-head">
+        <h2 id="more">More {p.type}</h2>
+        {type.description && <p>{type.description}</p>}
+      </div>
+      <div class="grid">
+        {related.map((r) => <ProjectCard project={r} />)}
+      </div>
+      <div class="more">
+        <Button href={`/type/${p.typeSlug}/`}>See more<span class="visually-hidden"> {p.type} projects</span></Button>
+      </div>
+    </section>
+  )}
+</Base>
+
+<style>
+  .head {
+    text-align: center;
+    padding: clamp(32px, 6vw, 72px) 0 clamp(32px, 5vw, 56px);
+  }
+  .type {
+    font-size: 15px;
+    font-weight: 500;
+    text-decoration: none;
+  }
+  /* type.display.deck-semibold.display-2 (42px → 78px): titles here can be long */
+  h1 {
+    margin: 16px auto 0;
+    max-width: 18ch;
+    font-size: clamp(42px, 2.2rem + 3.4vw, 78px);
+    line-height: 1.05;
+  }
+  /* type.body.standfirst (Austin Ionic), 20/25 → 22/27 */
+  .dek {
+    margin: 24px auto 0;
+    max-width: 34em;
+    font-family: var(--serif);
+    font-size: clamp(20px, 1.1rem + 0.3vw, 22px);
+    line-height: 1.24;
+    text-wrap: pretty;
+    color: var(--ink-2);
+  }
+
+  .article-link { text-decoration: none; }
+  .hero-link { display: block; }
+  .hero-link :global(.thumb img) { transition: transform 0.4s ease; }
+  .hero-link:hover :global(.thumb img) { transform: scale(1.02); }
+
+  .details {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    align-items: center;
+    gap: 24px 48px;
+    padding: 20px 0;
+    border-bottom: 1px solid var(--rule);
+  }
+  .meta { display: flex; flex-wrap: wrap; gap: 16px 40px; margin: 0; }
+  dt { font-size: 13px; line-height: 17px; color: var(--ink-3); } /* byline-1 */
+  dd { margin: 2px 0 0; font-size: 15px; line-height: 21px; font-weight: 500; }
+  dd a { text-decoration: none; }
+  .actions { display: flex; flex-wrap: wrap; gap: 12px; }
+
+  .related { margin-top: 96px; }
+  .more { display: flex; justify-content: flex-end; margin-top: 36px; }
+</style>

@@ -1,0 +1,39 @@
+---
+import type { Project } from '../lib/projects';
+import Thumb from './Thumb.astro';
+
+interface Props {
+  project: Project;
+  showType?: boolean;
+}
+const { project: p, showType = false } = Astro.props;
+---
+
+<article class="card">
+  <a href={`/projects/${p.slug}/`} class="link">
+    <Thumb project={p} />
+    {showType && <p class="type">{p.type}{p.year && ` · ${p.year}`}</p>}
+    <h3>{p.title}</h3>
+  </a>
+</article>
+
+<style>
+  .card { min-width: 0; }
+  .link { display: block; text-decoration: none; }
+  .type {
+    margin: 14px 0 0;
+    font-size: 13px; /* type.byline.byline-1 */
+    color: var(--ink-3);
+  }
+  /* Austin News Ionic Roman No 2 (the design system's Ionic heading face) */
+  h3 {
+    margin: 14px 0 0;
+    font-family: var(--serif-no2);
+    font-weight: 400;
+    font-size: 22px;
+    line-height: 25px;
+    text-wrap: balance;
+  }
+  .type + h3 { margin-top: 4px; }
+  .link:hover :global(.thumb img) { transform: scale(1.03); }
+</style>

@@ -1,0 +1,18 @@
+---
+import Base from '../../layouts/Base.astro';
+import ProjectIndex from '../../components/ProjectIndex.astro';
+import { getProjects } from '../../lib/projects';
+
+const projects = getProjects();
+---
+
+<Base title="All projects">
+  <section class="wrap">
+    <h1 class="page-title">All projects</h1>
+    <ProjectIndex projects={projects} />
+  </section>
+</Base>
+
+<style>
+  .page-title { margin: clamp(32px, 6vw, 72px) 0 40px; }
+</style>
