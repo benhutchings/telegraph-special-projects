@@ -1,7 +1,8 @@
 /* Telegraph brand fonts (see src/assets/fonts/README.md).
    Roles follow the Telegraph Design System typography tokens:
    Austin News Ionic Light → page titles (h1) · Ionic Roman No 2 → card titles (h3)
-   Austin News Ionic Roman → standfirsts & reading text · Austin News Deck → menu, footer logo
+   Austin News Ionic Roman → standfirsts & reading text · Ionic Semibold → home page title
+   Austin News Deck → menu, footer logo
    Doric News UI → interface, labels, small text (Hed Medium for headings). */
 @font-face {
   font-family: 'Austin News Deck';
@@ -20,7 +21,14 @@
 @font-face {
   font-family: 'Austin News Ionic';
   src: url('../assets/fonts/AustinNewsIonic-Roman.woff2') format('woff2');
-  font-weight: 350 900;
+  font-weight: 350 499;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'Austin News Ionic';
+  src: url('../assets/fonts/AustinNewsIonic-Semibold.woff2') format('woff2');
+  font-weight: 500 900; /* Semibold: home page title */
   font-style: normal;
   font-display: swap;
 }
@@ -193,14 +201,16 @@ a { color: inherit; }
 @media (max-width: 540px) { .grid { grid-template-columns: 1fr; } }
 
 /* ── Buttons ────────────────────────────────────────────────────────────────
-   Telegraph Design System "Button", XS / Outlined White
-   (Figma: All YouTube file, node 666:10793). Colour tokens from colors-semantics.
+   Telegraph Design System "Button", XS / Black
+   (Figma: Ben's designs, nodes 5867:3362 button and 5867:76 menu button).
    XS is 32px tall: 12px padding, 8px on the icon's side, 4px top/bottom, 4px gap,
-   type.button.label-2 (Doric UI Regular 15/15), 20px icon. Icon-only is 32×32. */
+   type.button.label-2 (Doric UI Regular 15/15), 20px icon. Icon-only is a 32×32 circle.
+   The 1px border is transparent (the fill shows through it) so states and the white
+   variant can colour it; padding is 1px less on each side to keep Figma's geometry. */
 :root {
-  --btn-outline-white-text: #ffffff;          /* web/button/text/outline-white/default */
-  --btn-outline-white-border: #ffffff;        /* web/button/border/outline-white/default */
-  --btn-outline-white-text-disabled: #dadada; /* …/disabled */
+  --btn-black-bg: #222222;                    /* web/button/background/black/default */
+  --btn-black-text: #ffffff;                  /* web/button/text/black/default */
+  --btn-text-disabled: #8a8a8a;
   --btn-white-bg: #ffffff;                    /* web/button/background/white/default */
   --btn-white-text: #222222;                  /* web/button/text/white/default */
   --btn-white-border: #222222;                /* web/button/border/white/default */
@@ -220,11 +230,11 @@ a { color: inherit; }
   box-sizing: border-box;
   height: 32px;
   min-height: 32px;
-  padding: 4px 12px;
-  border: 1px solid var(--btn-outline-white-border);
+  padding: 3px 11px;
+  border: 1px solid transparent;
   border-radius: 100px;
-  background: transparent;
-  color: var(--btn-outline-white-text);
+  background: var(--btn-black-bg);
+  color: var(--btn-black-text);
   font: inherit;
   font-family: var(--sans);
   font-weight: 400;
@@ -250,15 +260,15 @@ a { color: inherit; }
 }
 .btn:disabled,
 .btn[aria-disabled='true'] {
-  color: var(--btn-outline-white-text-disabled);
-  border-color: var(--btn-outline-white-text-disabled);
-  background: transparent;
+  color: var(--btn-text-disabled);
+  border-color: transparent;
+  background: var(--btn-black-bg);
   cursor: default;
 }
 
 /* Icon placement: padding on the icon's side reduces by 4px (12 → 8) */
-.btn--icon-right { padding-right: 8px; }
-.btn--icon-left { padding-left: 8px; }
+.btn--icon-right { padding-right: 7px; }
+.btn--icon-left { padding-left: 7px; }
 .btn__icon {
   display: inline-flex;
   flex-shrink: 0;
@@ -270,7 +280,7 @@ a { color: inherit; }
 .btn__icon--left { transform: scaleX(-1); }
 .btn__icon--external { transform: rotate(-45deg); }
 
-/* Icon-only size: fixed 32×32, 20px icon centred */
+/* Icon-only size: fixed 32×32 circle, 20px icon centred */
 .btn--icon {
   width: 32px;
   height: 32px;

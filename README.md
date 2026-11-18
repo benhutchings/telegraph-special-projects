@@ -15,8 +15,8 @@ Node 22.23.4 or newer is required (see `.nvmrc`).
 
 ## Editing content
 
-**Edit the Google Sheet. Changes go live at the next build:** every morning at about 07:00 UK time, or straight away
-if you trigger a rebuild (see below).
+**Edit the Google Sheet. Changes go live automatically** a few minutes after you stop editing (about 2 minutes of
+no edits, plus a minute or two for Netlify to build). There is also a daily rebuild at about 07:00 UK time as a backstop.
 
 ### Projects tab
 
@@ -60,6 +60,10 @@ Build settings are in [`netlify.toml`](netlify.toml): `npm run sync && npm run b
 3. **Add a build hook for the daily rebuild.** Under *Site configuration → Build & deploy → Build hooks*, add a hook and
    copy its URL. In the GitHub repo, go to *Settings → Secrets and variables → Actions* and add it as
    `NETLIFY_BUILD_HOOK`. [`.github/workflows/rebuild.yml`](.github/workflows/rebuild.yml) then rebuilds every day.
+4. **Rebuild when the sheet is edited.** In the sheet, open *Extensions → Apps Script* and paste in
+   [`scripts/apps-script/rebuild-on-edit.gs`](scripts/apps-script/rebuild-on-edit.gs). Under *Project Settings → Script
+   Properties*, add `NETLIFY_BUILD_HOOK` with the same build hook URL. Then select the `setup` function, click *Run*
+   and approve the permissions. After this, edits trigger one build once the sheet has been quiet for 2 minutes.
 
 ### Publishing a change straight away
 
@@ -67,6 +71,7 @@ Use either of these:
 
 - In GitHub: *Actions → Rebuild site → Run workflow*.
 - In Netlify: *Deploys → Trigger deploy → Deploy site*.
+- In the sheet's Apps Script editor: run `rebuildNow`.
 
 ### Local sync
 
@@ -113,4 +118,5 @@ scripts/
   fetch-images.mjs           ← npm run images (share images; runs before every build)
 netlify.toml                 ← Netlify build settings
 .github/workflows/rebuild.yml ← daily rebuild via Netlify build hook
+scripts/apps-script/         ← paste into the sheet: rebuilds on edit
 ```

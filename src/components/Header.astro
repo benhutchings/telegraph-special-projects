@@ -1,6 +1,7 @@
 ---
 import { getTypes } from '../lib/projects';
 import Logo from '../assets/telegraph-logo.svg';
+import Burger from '../assets/icons/burger.svg';
 const types = getTypes();
 ---
 
@@ -8,9 +9,7 @@ const types = getTypes();
   <div class="wrap bar">
     <a class="masthead" href="/" aria-label="The Telegraph – Special Projects home"><Logo class="logo" aria-hidden="true" /></a>
     <button class="btn btn--icon menu-btn" type="button" aria-label="Open menu" aria-expanded="false" aria-controls="site-menu" data-menu-open>
-      <svg width="20" height="20" viewBox="0 0 16 16" stroke="currentColor" stroke-width="1.2" aria-hidden="true">
-        <path d="M2 4.5h12M2 8h12M2 11.5h12" />
-      </svg>
+      <span class="btn__icon" aria-hidden="true"><Burger /></span>
     </button>
   </div>
 </header>
@@ -51,12 +50,19 @@ const types = getTypes();
 </script>
 
 <style>
+  /* Logo sits 32px from the top with 32px below it (the home page title starts there).
+     The logo is 89:15, so its height follows its width. */
+  .site-header, .menu-bar {
+    --logo-w: clamp(150px, 16vw, 190px);
+    --logo-h: calc(var(--logo-w) * 15 / 89);
+  }
   .bar, .menu-bar {
     position: relative;
     display: flex;
-    align-items: center;
+    align-items: flex-start;
     justify-content: center;
-    height: 80px;
+    padding-top: 32px;
+    padding-bottom: 32px;
   }
   .masthead {
     display: block;
@@ -64,13 +70,16 @@ const types = getTypes();
     line-height: 0;
   }
   .masthead :global(.logo) {
-    width: clamp(150px, 16vw, 190px);
-    height: auto;
+    display: block;
+    width: var(--logo-w);
+    height: var(--logo-h);
   }
-  /* Look comes from the shared .btn / .btn--icon styles; this only positions it */
+  /* Look comes from the shared .btn / .btn--icon styles; this only positions it,
+     vertically centred on the logo */
   .menu-btn {
     position: absolute;
     right: var(--gutter);
+    top: calc(32px + (var(--logo-h) - 32px) / 2);
   }
 
   .menu {

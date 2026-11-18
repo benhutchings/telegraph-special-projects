@@ -13,12 +13,8 @@ const sections = getTypes().map((t) => ({
 ---
 
 <Base>
-  <section class="hero wrap">
-    <h1 class="visually-hidden">The Telegraph Special Projects</h1>
-    <p class="intro">
-      Special Projects at The Telegraph explores new ways of telling stories,
-      through interactives, visual journalism, games and experiments.
-    </p>
+  <section class="hero">
+    <h1 class="hero-title">Special Projects</h1>
   </section>
 
   {sections.map((s) => (
@@ -40,22 +36,50 @@ const sections = getTypes().map((t) => ({
 </Base>
 
 <style>
+  /* Styled after the Telegraph "Brain health games" page header (.bhg-home__header):
+     full-width black band, soft white glow rising from the bottom, and a 1px white
+     rule that fades out towards both edges. */
   .hero {
+    position: relative;
+    padding: 0 var(--gutter) 16px; /* 32px gap above comes from the site header */
+    background-color: var(--bg);
+    background-image: radial-gradient(ellipse 52% 100% at 50% 100%, rgba(255, 255, 255, 0.3), transparent);
+    background-repeat: no-repeat;
     text-align: center;
-    padding-top: clamp(48px, 8vw, 96px);
-    padding-bottom: clamp(56px, 8vw, 88px);
   }
-  /* type.body.standfirst (Austin Ionic), 20/25 → 22/27 */
-  .intro {
-    margin: 0 auto;
-    max-width: 30em;
+  .hero::after {
+    content: '';
+    position: absolute;
+    left: 0;
+    bottom: 0;
+    width: 100%;
+    height: 1px;
+    background-image: linear-gradient(to left, transparent, #fff, transparent);
+    pointer-events: none;
+  }
+  /* Austin News Ionic Semibold headline: 32/35 → 40/40 (375px+) → 70/70 (768px+) */
+  .hero-title {
+    margin: 0;
     font-family: var(--serif);
-    font-size: clamp(20px, 1.1rem + 0.3vw, 22px);
-    line-height: 1.24;
-    text-wrap: pretty;
+    font-weight: 600;
+    font-size: 32px;
+    line-height: 35px;
     color: var(--ink);
   }
+  @media (min-width: 375px) {
+    .hero { padding-bottom: 24px; }
+    .hero-title { font-size: 40px; line-height: 40px; }
+  }
+  @media (min-width: 480px) {
+    .hero { padding-bottom: 32px; }
+  }
+  @media (min-width: 768px) {
+    .hero-title { font-size: 70px; line-height: 70px; }
+  }
+  /* The hero's fading rule replaces the first section's top border */
+  .hero + .section .section-head { border-top: 0; }
   .section { margin-top: 24px; }
+  .hero + .section { margin-top: 40px; }
   .more {
     display: flex;
     justify-content: flex-end;

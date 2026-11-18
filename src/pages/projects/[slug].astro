@@ -4,7 +4,7 @@ import Thumb from '../../components/Thumb.astro';
 import ProjectCard from '../../components/ProjectCard.astro';
 import Button from '../../components/Button.astro';
 import { getImage } from 'astro:assets';
-import { getProjects, getTypes, hostname } from '../../lib/projects';
+import { getProjects, getTypes } from '../../lib/projects';
 
 export function getStaticPaths() {
   return getProjects().map((p) => ({ params: { slug: p.slug }, props: { project: p } }));
@@ -50,7 +50,6 @@ const related = all.filter((x) => x.typeSlug === p.typeSlug && x.slug !== p.slug
       <dl class="meta">
         <div><dt>Format</dt><dd><a href={`/type/${p.typeSlug}/`}>{p.type}</a></dd></div>
         {p.year && <div><dt>Year</dt><dd>{p.year}</dd></div>}
-        {p.url && <div><dt>Published on</dt><dd>{hostname(p.url)}</dd></div>}
       </dl>
       <div class="actions">
         {p.url && (
