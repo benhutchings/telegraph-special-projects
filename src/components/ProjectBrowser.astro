@@ -1,0 +1,145 @@
+---
+// Every project in one grid inside the sidebar frame (BrowseShell).
+// Here the sidebar's links and search filter the grid in place rather than
+// navigating; the state is kept in the URL (?type=&year=&q=) so a filtered
+// view can be shared or bookmarked.
+import type { Project } from '../lib/projects';
+import BrowseShell from './BrowseShell.astro';
+import ProjectCard from './ProjectCard.astro';
+
+interface Props { projects: Project[] }
+const { projects } = Astro.props;
+---
+
+<BrowseShell brandIsHeading>
+  <section aria-label="Projects" data-results>
+    <!-- Announces the result count to screen readers as filters change -->
+    <p class="visually-hidden" aria-live="polite" data-summary></p>
+
+    <div class="grid" data-grid>
+      {projects.map((p) => (
+        <div class="cell" data-type={p.typeSlug} data-year={p.year} data-text={`${p.title} ${p.type} ${p.year} ${p.description}`.toLowerCase()}>
+          <ProjectCard project={p} showType />
+        </div>
+      ))}
+    </div>
+    <div class="empty" data-empty hidden>
+      <p>No projects match.</p>
+      <button class="btn" type="button" data-clear>Clear filters</button>
+    </div>
+  </section>
+</BrowseShell>
+
+<script>
+  const root = document.querySelector<HTMLElement>('[data-browser]')!;
+  const form = root.querySelector<HTMLFormElement>('[data-search-form]')!;
+  const input = root.querySelector<HTMLInputElement>('[data-search]')!;
+  const typeLinks = [...root.querySelectorAll<HTMLAnchorElement>('a[data-type]')];
+  const yearLinks = [...root.querySelectorAll<HTMLAnchorElement>('a[data-year]')];
+  const cells = [...root.querySelectorAll<HTMLElement>('[data-grid] .cell')];
+  const summary = root.querySelector<HTMLElement>('[data-summary]')!;
+  const empty = root.querySelector<HTMLElement>('[data-empty]')!;
+  const clear = root.querySelector<HTMLButtonElement>('[data-clear]')!;
+  const typeName = Object.fromEntries(typeLinks.map((a) => [a.dataset.type, a.dataset.name ?? '']));
+
+  const params = new URLSearchParams(location.search);
+  const state = { type: params.get('type') ?? '', year: params.get('year') ?? '' };
+  input.value = params.get('q') ?? '';
+  if (state.type && !typeLinks.some((a) => a.dataset.type === state.type)) state.type = '';
+  if (state.year && !yearLinks.some((a) => a.dataset.year === state.year)) state.year = '';
+
+  const terms = () => input.value.toLowerCase().trim().split(/\s+/).filter(Boolean);
+  const matchText = (c: HTMLElement, t: string[]) => t.every((w) => c.dataset.text!.includes(w));
+  const mark = (a: HTMLAnchorElement, on: boolean) => (on ? a.setAttribute('aria-current', 'true') : a.removeAttribute('aria-current'));
+
+  function apply() {
+    const t = terms();
+    let shown = 0;
+    for (const c of cells) {
+      const ok = (!state.type || c.dataset.type === state.type)
+        && (!state.year || c.dataset.year === state.year)
+        && matchText(c, t);
+      c.hidden = !ok;
+      if (ok) shown++;
+    }
+
+    // Counts beside each option show what you'd get if you picked it
+    for (const a of typeLinks) {
+      const n = cells.filter((c) => (!a.dataset.type || c.dataset.type === a.dataset.type)
+        && (!state.year || c.dataset.year === state.year) && matchText(c, t)).length;
+      a.querySelector('[data-count]')!.textContent = String(n);
+      a.classList.toggle('is-zero', n === 0);
+      mark(a, a.dataset.type === state.type);
+    }
+    for (const a of yearLinks) {
+      const n = cells.filter((c) => (!a.dataset.year || c.dataset.year === a.dataset.year)
+        && (!state.type || c.dataset.type === state.type) && matchText(c, t)).length;
+      const count = a.querySelector('[data-count]');
+      if (count) count.textContent = String(n);
+      a.classList.toggle('is-zero', n === 0);
+      mark(a, a.dataset.year === state.year);
+    }
+
+    const bits = [`${shown} ${shown === 1 ? 'project' : 'projects'}`];
+    if (state.type) bits.push(typeName[state.type]);
+    if (state.year) bits.push(state.year.replace('/', '–'));
+    if (t.length) bits.push(`matching “${input.value.trim()}”`);
+    summary.textContent = bits.join(' · ');
+    empty.hidden = shown > 0;
+
+    const url = new URL(location.href);
+    for (const [k, v] of [['type', state.type], ['year', state.year], ['q', input.value.trim()]]) {
+      v ? url.searchParams.set(k, v) : url.searchParams.delete(k);
+    }
+    history.replaceState(null, '', url);
+  }
+
+  const closeDrawer = () => root.dispatchEvent(new Event('browse:close'));
+  // Plain clicks filter in place; cmd/ctrl/shift-click still opens the link in a new tab
+  const plainClick = (e: MouseEvent) => {
+    if (e.metaKey || e.ctrlKey || e.shiftKey || e.altKey || e.button !== 0) return false;
+    e.preventDefault();
+    return true;
+  };
+  const after = () => {
+    apply();
+    closeDrawer();
+    // Back to the top of the list if you'd scrolled down; leave the page still otherwise
+    if (window.scrollY > 0) {
+      const smooth = !matchMedia('(prefers-reduced-motion: reduce)').matches;
+      window.scrollTo({ top: 0, behavior: smooth ? 'smooth' : 'auto' });
+    }
+  };
+  for (const a of typeLinks) {
+    a.addEventListener('click', (e) => {
+      if (!plainClick(e)) return;
+      state.type = a.dataset.type ?? '';
+      after();
+    });
+  }
+  for (const a of yearLinks) {
+    a.addEventListener('click', (e) => { if (plainClick(e)) { state.year = a.dataset.year ?? ''; after(); } });
+  }
+  clear.addEventListener('click', () => { state.type = ''; state.year = ''; input.value = ''; apply(); });
+
+  input.addEventListener('input', apply);
+  form.addEventListener('submit', (e) => { e.preventDefault(); closeDrawer(); });
+  input.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape' && input.value) { e.stopPropagation(); input.value = ''; apply(); }
+  });
+
+  apply();
+</script>
+
+<style>
+  .cell[hidden] { display: none; }
+  .empty {
+    display: grid;
+    justify-items: center;
+    gap: 16px;
+    padding: 64px 0;
+    color: var(--ink-3);
+  }
+  .empty[hidden] { display: none; }
+  .empty p { margin: 0; }
+</style>
