@@ -1,7 +1,9 @@
-# Netlify build settings. Content comes from the Google Sheet on every build:
-# sync (sheet → CSV) → check (data report) → images (share images) → astro build.
+# Netlify build settings. Content comes from the committed src/data/projects.csv:
+# check (data report) → images (share images) → astro build.
+# The Google Sheet sync (npm run sync) is off for now; to turn it back on, set the
+# command to "npm run sync && npm run build" with a working SHEET_CSV_URL.
 [build]
-  command = "npm run sync && npm run build"
+  command = "npm run build"
   publish = "dist"
 
 [build.environment]
